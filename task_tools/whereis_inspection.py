@@ -219,7 +219,7 @@ def test1():
     activated = activate_task(task).result()
 
 def main():
-    all_tasks = get_all_task_responses('whereis2').result()
+    all_tasks = get_all_task_responses('whereis_synth3').result()
     for task in all_tasks:
         activated = activate_task(task, wait=True).result()
         print('got result', activated)
