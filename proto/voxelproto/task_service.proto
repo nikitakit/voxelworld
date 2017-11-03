@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package voxelproto.task;
+
+import "voxelproto/crowd_task.proto";
+
+message NamedTask {
+    string name = 1;
+
+    // The base task includes any fields that are user-specified
+    CrowdTask base_task = 2;
+
+    // The processed task is the result of task conversion
+    CrowdTask processed_task = 3;
+
+    // A list of worker responses to this task
+    repeated CrowdTaskResponse responses = 4;
+}
+
+// The TaskServiceRequest message is deprecated, but its submessages are still
+// used
+message TaskServiceRequest {
+    enum TaskServiceCommand { // deprecated
+        NONE = 0;
+        LIST_FOLDERS = 1;
+    }
+    message FindTasks {
+        repeated string paths = 1; // search by paths (prefixes)
+        repeated string names = 2; // search by names (exact match)
+        bool return_processed = 3;
+        bool return_responses = 4;
+    }
+
+    message SubmitTasks {
+        repeated NamedTask tasks = 1;
+        bool save = 2;
+        bool return_processed = 3;
+        bool activate = 4;
+    }
+
+    message FindTaskNames {
+        repeated string paths = 1; // search by paths (prefixes)
+        repeated string names = 2; // search by names (exact match)
+    }
+
+    oneof request { // deprecated
+        TaskServiceCommand command = 1;
+        FindTasks find = 2;
+        SubmitTasks submit = 3;
+        FindTaskNames find_names = 4;
+    }
+}
+
+message ListFoldersRequest {
+}
+
+message ListFoldersResponse {
+    repeated string folders = 1;
+}
+
+message FindTasksResponse {
+    repeated NamedTask tasks = 1;
+}
+
+message SubmitTasksResponse {
+    repeated NamedTask tasks = 1;
+}
+
+message FindTaskNamesResponse {
+    repeated string names = 1;
+}
+
+service TaskService {
+    rpc ListFolders (ListFoldersRequest) returns (ListFoldersResponse) {}
+    rpc Find (TaskServiceRequest.FindTasks) returns (FindTasksResponse) {}
+    rpc Submit (TaskServiceRequest.SubmitTasks) returns (SubmitTasksResponse) {}
+    rpc FindNames (TaskServiceRequest.FindTaskNames) returns (FindTaskNamesResponse) {}
+}

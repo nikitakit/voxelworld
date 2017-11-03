@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package lcmproto;
+
+// The greeting service definition.
+service LCMBridge {
+  // Sends a greeting
+  rpc Send (stream LCMMessage) returns (Empty) {}
+  rpc Receive (Empty) returns (stream LCMMessage) {}
+}
+
+message LCMMessage {
+  string channel = 1;
+  bytes msg = 2;
+}
+
+// TODO(nikita): I want to import google.protobuf.Empty, but can't get protoc
+// to successfully find that dependency
+message Empty {}

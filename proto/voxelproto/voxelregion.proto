@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package voxelproto;
+
+message VoxelRegion {
+    repeated int32 dimensions = 1; // length, height, depth
+    repeated int32 position = 2; // (x,y,z). Y points up
+    oneof voxel_data {
+        // Packed array of voxels, in xyz order
+        U32Voxels voxels_u32 = 3;
+        bytes voxels_u8 = 4;
+    }
+    // By default, voxel values take the form:
+    // HI [16-bit 0] [4-bit extended id] [4-bit data] [8-bit id] LO
+    // Where the IDs and data bits are the canonical values from Minecraft.
+    // The voxels_u8 field is currently not in use, pending figuring out how
+    // to negotiate custom block numberings between endpoints
+}
+
+message U32Voxels {
+    repeated sfixed32 voxels_u32 = 1;
+    // In order to support monkeypatch_voxelregion, no additional fields are
+    // allowed here
+}
+
+// Used by monkeypatch_voxelregion only
+message _DummyVoxelRegion {
+    bytes voxels_u32 = 3;
+}

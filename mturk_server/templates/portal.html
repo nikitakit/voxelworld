@@ -1,0 +1,200 @@
+<html>
+	<head>
+		<title>Portal</title>
+	</head>
+
+	<body>
+		{% raw pool_data['portal_header_html'] %}
+		{% if completion_code == CompletionCode.completed %}
+		<p>Thank you for completing this HIT! Press the button below to submit.</p>
+		<form style="" id="mturk_form" action="{{ turk_submit_to }}/mturk/externalSubmit" method="post">
+			<input type="hidden" id="pool" name="pool" value="{{ pool }}">
+			<input type="hidden" id="assignmentId" name="assignmentId" value="{{ assignment_id }}">
+			<input type="hidden" id="token" name="token" value="{{ token }}">
+			<input type="hidden" id="token_response" name="token_response" value="{{ token_response }}">
+			<!--
+			   A correct token_response is needed for this HIT to be approved.
+			   Don't try to manually modify this value, or your work will be rejected!
+			-->
+			<button>Submit</button>
+		</form>
+		{% elif completion_code == CompletionCode.no_work %}
+		<h3>Please return this HIT (no work available!)</h3>
+		<p>
+			Our system has not found any new tasks for you. Please return this HIT, as you will not be able to submit it.
+		</p>
+		<p>
+			This has most likely happened because you recently returned an HIT of this type.
+			Whenever you return one of our HITs, the amount of work available to you decreases.
+		</p>
+		{% elif completion_code == CompletionCode.generic_error %}
+		<h3>Please return this HIT (an error occurred)</h3>
+		<p>
+			An error has occurred. Unfortunately, this means that we cannot evaluate your work and must ask you to return this HIT.
+		</p>
+		{% elif completion_code == CompletionCode.work_rejected %}
+		<h3>Please return this HIT</h3>
+		<p>
+			Our automated system has reported that your work cannot be accepted.
+		</p>
+		<p>
+			Rather than submitting your work and having it rejected, we are letting you return the HIT at this time.
+		</p>
+		{% elif completion_code == CompletionCode.returned %}
+		<h3>You have already returned this assignment</h3>
+		<p>
+			If you think this is a mistake, please contact us.
+		</p>
+		{% elif completion_code == CompletionCode.abandoned %}
+		<h3>You have already abandoned this assignment</h3>
+		<p>
+			If you think this is a mistake, please contact us.
+		</p>
+		{% elif accepted %}
+		<h3>Instructions</h3>
+		<p>Please go to the
+			<a target="interactive_console" href="/dashboard?assignmentId={{ assignment_id }}&workerId={{ worker_id }}">interactive console</a>
+			to complete this HIT.
+		</p>
+		<p>
+			<u> Submission</u>:
+			<a id="submit-not-ready"> A submit button will appear here once you complete the work in the other window. </a>
+			<a id="submit-ready" style="display:none">
+				<button onclick="document.forms['mturk_form'].submit();"> Click here to submit </button>
+				Thank you!
+			</a>
+			<a id="submit-auto" style="display:none"> This page will submit automatically once you complete the work in the other window. </a>
+			<br/>
+			(If you have issues submitting, please refresh this page.)
+		</p>
+		<p>
+			<u> Tip</u>:
+			You can keep the same console page open as you accept multiple HITs in this series.
+			Newly accepted HITs will be shown there automatically.
+		</p>
+		<p>
+			<input id="auto-submit" type="checkbox" onclick="toggleAutoSubmit();"></input>
+			Check this box to submit automatically as soon as you complete the work in the console.
+		</p>
+		<p>
+			<form style="display:none;" id="mturk_form" action="{{ turk_submit_to }}/mturk/externalSubmit" method="post">
+				<input type="hidden" id="pool" name="pool" value="{{ pool }}">
+				<input type="hidden" id="assignmentId" name="assignmentId" value="{{ assignment_id }}">
+				<input type="hidden" id="token" name="token" value="{{ token }}">
+				<input type="hidden" id="token_response" name="token_response" value="">
+				<button>Submit</button>
+				<!--
+				   A correct token_response is needed for this HIT to be approved.
+				   Don't try to manually submit this form, or your work will be rejected!
+
+				   If the websocket connection fails, refreshing the page will pre-populate
+				   the token_response, as long as the interactive console has already
+				   recorded the HIT as completed.
+				-->
+			</form>
+		</p>
+		{% else %}
+		<h3>Instructions</h3>
+		<div id="pre-accept">
+			<p>This task will be presented on an external page.
+				<a target="_blank" href="/dashboard?preview=1">Preview the page</a> (opens in a new tab/window)
+			</p>
+			<p>
+				<u>Supported Browsers</u>:
+				Chrome 53 (or later) with WebGL and Javascript enabled.
+				<br/>
+				(You may use another browser at your own risk. If you can't complete the work on the external page, you will need to return this HIT)
+			</p>
+		</div>
+
+		<script>
+		// Browser compatibility check
+		function haveWebGL() {
+			var canvas = document.createElement("canvas");
+		    // Get WebGLRenderingContext from canvas element.
+		    var gl = canvas.getContext("webgl")
+		      || canvas.getContext("experimental-webgl");
+		    // Report the result.
+		    if (gl && gl instanceof WebGLRenderingContext) {
+		      return true;
+		    }
+			return false;
+		}
+
+		window.addEventListener("load", function() {
+			var paragraph = document.getElementById("pre-accept");
+			if (!haveWebGL()) {
+				paragraph.innerHTML = "<b> Do not accept this HIT! </b> <br/> We have detected that your browser does not support WebGL, which is required to complete it.";
+				return;
+			}
+		});
+		</script>
+		{% end %}
+
+		<h3>Task description</h3>
+		{% raw pool_data['portal_html'] %}
+
+		<h3>About this task series</h3>
+		<p>
+			This task is part of research conducted by the Natural Language Processing group at the University of California, Berkeley.
+			We are interested in building computer systems that can understand the world and interact with humans through the use of language.
+			In these tasks, you will be presented with a virtual world, and asked to complete certain actions or to describe what you see.
+			Your responses will be used in our research.
+		</p>
+	</body>
+
+	{% if accepted and completion_code != CompletionCode.completed %}
+	<script>
+		var readyToSubmit = false;
+
+		function url(s) {
+		    var l = window.location;
+		    return ((l.protocol === "https:") ? "wss://" : "ws://") + l.host + s;
+		}
+		ws = new WebSocket(url("/portal/ws?assignmentId={{ assignment_id }}"));
+		ws.onmessage = function(evt) {
+			var msg = JSON.parse(evt.data);
+			if (msg.type == "submit") {
+				document.getElementById('token_response').value = msg.token_response;
+				readyToSubmit = true;
+
+				if (document.getElementById('auto-submit').checked) {
+					document.forms["mturk_form"].submit();
+				} else {
+					document.getElementById('submit-not-ready').style.display = "none";
+					document.getElementById('submit-ready').style.display = "";
+				}
+			}
+		};
+
+		function toggleAutoSubmit() {
+			var checked = document.getElementById('auto-submit').checked;
+			if (checked) {
+				document.cookie = "autosubmit=true";
+				if (readyToSubmit) {
+					document.forms["mturk_form"].submit();
+					return;
+				}
+				document.getElementById('submit-not-ready').style.display = "none";
+				document.getElementById('submit-ready').style.display = "none";
+				document.getElementById('submit-auto').style.display = "";
+			} else {
+				document.cookie = "autosubmit=false";
+				if (readyToSubmit) {
+					document.getElementById('submit-not-ready').style.display = "none";
+					document.getElementById('submit-ready').style.display = "";
+				} else {
+					document.getElementById('submit-not-ready').style.display = "";
+					document.getElementById('submit-ready').style.display = "none";
+				}
+				document.getElementById('submit-auto').style.display = "none";
+			}
+		}
+
+		if (document.cookie == "autosubmit=true") {
+			document.getElementById('auto-submit').checked = true;
+			toggleAutoSubmit();
+		}
+	</script>
+	{% end %}
+</html>

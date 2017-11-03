@@ -1,0 +1,19 @@
+{
+    "sample_pool": {
+        "description_title": "A sample task",
+        "description": "Click the button to complete the task",
+        "portal_header_html": "<h2>A sample task </h2>",
+        "portal_html": "<p> Task description: None </p>",
+        "count": 4,
+        "task_templates": [
+            {"game": "auto_approve", "i":0},
+            {"game": "auto_approve", "i":1},
+            {"game": "auto_approve", "i":2},
+            {"game": "auto_approve", "i":3},
+            {"game": "auto_approve", "i":4},
+            {"game": "auto_approve", "i":5},
+            {"game": "auto_approve", "i":6},
+            {"game": "auto_approve", "i":7}
+        ]
+    }
+}

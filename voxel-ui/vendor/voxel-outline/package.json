@@ -1,0 +1,22 @@
+{
+  "name": "voxel-outline",
+  "description": "outline targeted voxels (voxel.js plugin)",
+  "version": "0.4.3",
+  "main": "outline.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:deathcap/voxel-outline.git"
+  },
+  "keywords": [
+    "voxel"
+  ],
+  "dependencies": {
+    "gl-buffer": "^2.0.6",
+    "gl-mat4": "^1.1.2",
+    "gl-vao": "^1.1.2",
+    "inherits": "^2.0.1",
+    "lodash.throttle": "^3.0.1",
+    "simple-3d-shader": "0.0.0"
+  },
+  "license": "MIT"
+}

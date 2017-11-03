@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package voxelproto.snapshot;
+
+import "voxelproto/world_snapshot.proto";
+
+message FindSnapshots {
+    repeated string paths = 1; // search by paths (prefixes)
+    repeated string names = 2; // search by names (exact match)
+}
+
+message SaveSnapshots {
+    repeated WorldSnapshot snapshots = 1;
+}
+
+message ListFoldersRequest {
+}
+
+message ListFoldersResponse {
+    repeated string folders = 1;
+}
+
+message FindSnapshotsResponse {
+    repeated WorldSnapshot snapshots = 1;
+}
+
+message SaveSnapshotsResponse {
+}
+
+service SnapshotService {
+    rpc ListFolders (ListFoldersRequest) returns (ListFoldersResponse) {}
+    rpc Find (FindSnapshots) returns (FindSnapshotsResponse) {}
+    rpc Save (SaveSnapshots) returns (SaveSnapshotsResponse) {}
+}

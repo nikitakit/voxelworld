@@ -1,0 +1,46 @@
+<html>
+    <body>
+        <h1>LCMProto Websocket Bridge Test</h1>
+
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="../lcmproto_ws_bridge.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var subscription = null;
+            var lcm;
+            $(document).ready(function() {
+                lcm = new LCMProto("ws://localhost:8000");
+            });
+
+            function subscribe() {
+                if (subscription != null) {
+                    alert('Cannot subscribe twice!');
+                    return;
+                }
+                subscription = lcm.subscribe("EXAMPLE", "mctest.ExampleMessage", function(msg) {
+                  alert(msg.timestamp);
+                });
+            }
+
+            function unsubscribe() {
+                if (subscription === null) {
+                    alert('No subscription available!');
+                    return;
+                }
+                lcm.unsubscribe(sub);
+                subscription = null;
+            }
+
+
+            function publish() {
+                lcm.publish("EXAMPLE", "mctest.ExampleMessage", {
+                  position: [1, 2, 3],
+                  name: "bridged",
+                  enabled: true,
+                });
+            }
+        </script>
+        <button onclick="subscribe();">Subscribe</button>
+        <button onclick="unsubscribe();">Unsubscribe</button>
+        <button onclick="publish();">Publish a message</button>
+    </body>
+</html>

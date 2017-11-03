@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package voxelproto.world;
+
+import "voxelproto/voxelregion.proto";
+
+message ListRequest {
+}
+
+message LoadRequest {
+    string path = 1; // Path to world file
+    // TODO: support loading dimensions other than the overworld
+    // TODO: world service should be capable of managing coordinate transforms
+    // on clients behalf
+}
+
+message RegionRequest {
+    repeated int32 dimensions = 1; // length, height, depth
+    repeated int32 position = 2; // (x,y,z). Y points up
+}
+
+message ListResponse {
+    repeated string paths = 1;
+}
+
+message LoadResponse {
+}
+
+message RegionResponse {
+    repeated VoxelRegion regions = 1;
+}
+
+service WorldService {
+    rpc List (ListRequest) returns (ListResponse) {}
+    rpc Load (LoadRequest) returns (LoadResponse) {}
+    rpc GetRegions (RegionRequest) returns (RegionResponse) {}
+}

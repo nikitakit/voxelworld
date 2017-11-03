@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package lrpc;
+
+message ExampleRequest {
+    int64 timestamp = 1;
+    repeated double position = 2;
+    repeated double orientation = 3;
+    repeated int32 ranges = 4;
+    string name = 5;
+    bool enabled = 6;
+}
+
+message ExampleReply {
+    int64 timestamp = 1;
+    repeated double position = 2;
+    repeated double orientation = 3;
+    repeated int32 ranges = 4;
+    string name = 5;
+    bool enabled = 6;
+}
+
+service ExampleService {
+    rpc ExampleMethod (ExampleRequest) returns (ExampleReply) {}
+    rpc ExampleStreamingOut (ExampleRequest) returns (stream ExampleReply) {}
+    // rpc ExampleStreamingIn (stream ExampleRequest) returns (ExampleReply) {}
+    // rpc ExampleStreamingBidirectional (stream ExampleRequest) returns (stream ExampleReply) {}
+}

@@ -1,0 +1,7 @@
+{
+"use_sandbox" : true,
+"stdout_log" : true,
+"verify_mturk_ssl" : true,
+"aws_key" : "<your info here>",
+"aws_secret_key" : "<your info here>"
+}

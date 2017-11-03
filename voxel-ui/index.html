@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>VoxelWorld Dev View</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+      body {
+        font-family: Monospace;
+        font-size: 12px;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+      #container {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        width: 100%;
+        height: 100%;
+      }
+
+      #startup-text {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        margin: -4em 0 0 -15em;
+        width: 30em;
+        height: 8em;
+        text-align: center;
+        background-color: #f0f0f0;
+      }
+
+      #loading-text {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        margin: -4em 0 0 -15em;
+        width: 30em;
+        height: 8em;
+        text-align: center;
+        background-color: #f0f0f0;
+        display: none;
+      }
+
+      #tracker {
+          font-size: 70%;
+      }
+
+      #tracker p {
+          margin-top: 0.2em;
+      }
+
+      #task-container p {
+          margin-top: 0.6em;
+          margin-bottom: 0.4em;
+      }
+
+      #crosshair {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        margin: -16px 0 0 -16px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-tab {
+          display:none;
+      }
+
+      #stats { bottom: 0px; right: 0px; }
+      .bar-tab { right: 33% !important; left: 33% !important; }
+      .logo {position: absolute; top: 5px; left: 5px; }
+      .errorMessage { text-align: center; width: 200px; margin: 20px auto; }
+    </style>
+  </head>
+  <body>
+    <div style="width: 100%;overflow:auto;">
+        <div style="float:left; width: 70%; height:1000px">
+            <div id="container"></div>
+            <div id="crosshair"><img src="crosshair.png"/></div>
+            <div id="startup-text">
+                <p>Starting console...</p>
+                <p>Please wait</p>
+                <p>(This may take a few seconds)</p>
+            </div>
+            <div id="loading-text">
+                <p>Loading task...</p>
+                <p>Please wait</p>
+                <p>(This may take a few seconds)</p>
+            </div>
+        </div>
+        <div style="float:right; width:29%">
+            <div id="tracker"></div>
+
+            <div id="sidebar">
+                <div>
+                    <h3>Tabs</h3>
+                    <!-- Note how each id show-* matches an id sidebar-* -->
+                    <button id="show-controls" class="sidebar-button">Controls</button>
+                    <button id="show-snapshots" class="sidebar-button">Snapshots &amp; Prep</button>
+                    <button id="show-task" class="sidebar-button">Task</button>
+                </div>
+                <div id="sidebar-controls" class="sidebar-tab sidebar-tab-default">
+                    <h2> Controls </h2>
+
+                    <h3> World </h3>
+                    <p><button id="path-list">Query available worlds</button></p>
+                    <p><select id="path-selector"></select></p>
+                    <p><button id="path-confirm">(Re)load world</button></p>
+
+                    <h3> Render </h3>
+                    <form action="#" onsubmit="return false">
+                        <p>
+                            <button id="render-invalidate-confirm">Invalidate all chunks</button>
+                        </p>
+                        <input id="noDynamicChunks" type="checkbox" class="save"> Override dynamic chunk rendering </input>
+                        <p> Position:
+                            <input id="x" type="number" style="width:50px"></input>
+                            <input id="y" type="number" style="width:50px"></input>
+                            <input id="z" type="number" style="width:50px"></input>
+                        </p>
+                        <p> Dimensions:
+                            <input id="dx" type="number" style="width:50px"></input>
+                            <input id="dy" type="number" style="width:50px"></input>
+                            <input id="dz" type="number" style="width:50px"></input>
+                        </p>
+                        <p>
+                            <button id="render-confirm">Render region</button>
+                        </p>
+                    </form>
+
+                    <h3> Camera </h3>
+                    <form action="#" onsubmit="return false">
+                        <p> Position:
+                            <input id="px" type="number" style="width:50px"></input>
+                            <input id="py" type="number" style="width:50px"></input>
+                            <input id="pz" type="number" style="width:50px"></input>
+                        </p>
+                        <p>
+                            <button id="teleport-confirm">Teleport</button>
+                        </p>
+                    </form>
+
+                    <h3> Screenshot </h3>
+                    <form action="#" onsubmit="return false">
+                        <p><img id="screenshot-target" width="50px" height="50px"></img></p>
+                        <p><button id="screenshot-confirm">Screenshot</button></p>
+                    </form>
+                </div>
+                <div id="sidebar-snapshots" class="sidebar-tab">
+                    <h2> Snapshots </h2>
+                    <form action="#" onsubmit="return false">
+                        <p>
+                            Save in: <input id="snapshot-folder" value="/" class="save"> <button id="snapshot-confirm">Snapshot!</button>
+                            <span><abbr id="snapshot-warning" style="display:none;color:red" title="">W!</abbr></span>
+                        </p>
+                        <p>
+                            Search: <input id="snapshot-find-folder" value="/" class="save">
+                            <button id="snapshot-find-confirm">Search folder</button>
+                        </p>
+                        <p>
+                            <select id="snapshot-selector"></select>
+                        </p>
+                        <p>
+                            <button id="snapshot-load-confirm">Load snapshot</button>
+                        </p>
+                    </form>
+                    <h2> Task prep </h2>
+                    <form action="#" onsubmit="return false">
+                        <p>
+                            Name: <input id="prep-name" value="/test">
+                            <button id="prep-load-confirm">Load Base</button>
+                            <button id="prep-load-processed-confirm">Load Proc.</button>
+                        </p>
+                        <p>
+                            Game:
+                            <select id="prep-game-selector" class="save">
+                                <option value="preview">Preview</option>
+                                <option value="auto_approve">auto_approve</option>
+                                <option value="snapshot_annotate_v3">snapshot_annotate_v3</option>
+                                <option value="whereis_annotate_v1">whereis_annotate_v1</option>
+                                <option value="whereis_guess_v1">whereis_guess_v1</option>
+                            </select>
+                            <button id="prep-game-confirm">Get Base</button>
+                        </p>
+                        <p>
+                            Base task:
+                            <br/>
+                            <textarea id="prep-json" style="width:90%;height:4em" class="save"></textarea>
+                        </p>
+                        <p>
+                            <button id="prep-confirm">Process &amp; Activate</button>
+                            <button id="prep-save-confirm">Process &amp; Save</button>
+                            <button id="prep-activate-and-return-confirm">P &amp; A &amp; Return</button>
+                        </p>
+                        <p>
+                        </p>
+                        <h3> Responses </h3>
+                        <p>
+                            <button id="prep-load-responses-confirm">Load responses</button>
+                        </p>
+                        <p>Date: <input id="prep-submitted-date" value="None" class="save" disabled></input></p>
+                        <p><textarea id="prep-submitted-json" style="width:90%;height:4em" class="save" disabled></textarea></p>
+                    </form>
+                </div>
+                <div id="sidebar-task" class="sidebar-tab">
+                    <div>
+                        <h2> Task view </h2>
+                    </div>
+                    <div id="task-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="bundle.js"></script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package voxelproto.task;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "voxelproto/world_snapshot.proto";
+
+message Heatmap {
+    repeated int32 dimensions = 1; // length, height, depth
+    repeated int32 position = 2; // (x,y,z). Y points up
+    string name = 3;
+    repeated float voxels = 4;
+}
+
+message StaticWorldTaskData {
+    WorldSnapshot snapshot = 1;
+    google.protobuf.Struct data = 2;
+    repeated Heatmap heatmaps = 3; // Used for data visualization / debugging
+}
+
+// This message defines a task that is given to crowd workers
+message CrowdTask {
+    string game = 1;
+    oneof data {
+        // The struct datatype can represent any JSON object in a schema-less
+        // manner. This is useful for defining tasks where you don't want to
+        // specify a protobuf schema
+        google.protobuf.Struct data_struct = 2;
+
+        // This adds a basic level of scheme for the snapshot only.
+        // Needed because marshalling snapshots through protobuf Structs has
+        // very poor performance.
+        StaticWorldTaskData data_static_world = 3;
+    }
+}
+
+// This message encodes the response to a task.
+// The task definition is not part of the response, so pairing up definitions
+// and responses needs to happen in the application.
+// See task_service.proto::NamedTask for that pairing
+message CrowdTaskResponse {
+    enum CompletionCode {
+        ACTIVE = 0;
+        COMPLETED = 1;
+        NO_WORK = 2;
+        GENERIC_ERROR = 3;
+        WORK_REJECTED = 4;
+        RETURNED = 5;
+        ABANDONED = 6;
+    }
+
+    float elapsed_time = 2; // Time taken to complete the task, in seconds
+    google.protobuf.Timestamp submission_timestamp = 3; // When the task was submitted
+
+    string assignment_id = 4;
+    string worker_id = 5;
+    CompletionCode completed = 6;
+
+    oneof data {
+        google.protobuf.Struct data_struct = 1;
+    }
+}
+
+service TrackerService {
+    rpc Activate (CrowdTask) returns (CrowdTaskResponse) {}
+}

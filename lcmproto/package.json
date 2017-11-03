@@ -1,0 +1,11 @@
+{
+  "name": "lcmproto_ws_bridge",
+  "version": "0.0.1",
+  "main": "lcmproto_ws_bridge.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+  }
+}

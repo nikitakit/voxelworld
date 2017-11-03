@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package mctest;
+
+message ExampleMessage {
+    int64 timestamp = 1;
+    repeated double position = 2;
+    repeated double orientation = 3;
+    repeated int32 ranges = 4;
+    string name = 5;
+    bool enabled = 6;
+}

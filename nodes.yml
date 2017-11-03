@@ -1,0 +1,16 @@
+windows:
+  - name: voxelworld
+    root: .
+    layout: tiled
+    panes:
+      - commands:
+        - echo "Press enter to SHUT DOWN all of voxelworld"
+        - read test && tmux kill-window -t voxelworld
+        focus: true
+      - lcmproto/lcmproto_ws_bridge.sh
+      - cd voxel-ui && npm start
+      - cd voxel-ui && npm run-script dashboard
+      - python world_service/world_service.py
+      - python task_tools/snapshot_service.py
+      - python task_tools/task_service.py
+      - cd mturk_server && python main.py

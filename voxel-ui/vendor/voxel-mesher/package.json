@@ -1,0 +1,53 @@
+{
+  "name": "voxel-mesher",
+  "version": "0.14.4",
+  "description": "voxel mesher with ambient occlusion and transparency (voxel.js plugin)",
+  "main": "mesh-plugin.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "block-models": "file:../block-models",
+    "cwise-compiler": "1.1.0",
+    "gl-buffer": "^2.0.8",
+    "gl-mat4": "^1.1.2",
+    "gl-vao": "^1.1.3",
+    "greedy-mesher": "^1.0.2",
+    "inherits": "^2.0.1",
+    "ndarray": "^1.0.15",
+    "ndarray-ops": "^1.2.2",
+    "typedarray-pool": "^1.0.2"
+  },
+  "devDependencies": {
+    "ndarray-fill": "^1.0.1",
+    "ndarray-segment": "0.0.0",
+    "tap": "^0.6.0",
+    "voxel": "^0.5.0"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/voxel/voxel-mesher.git"
+  },
+  "keywords": [
+    "voxel",
+    "plugin",
+    "ambient",
+    "occlusion",
+    "mesher",
+    "ndarray",
+    "transparency",
+    "translucency"
+  ],
+  "author": "Mikola Lysenko",
+  "contributors": [
+    "deathcap <deathcap@gmx.co.uk>"
+  ],
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/voxel/voxel-mesher/issues"
+  }
+}

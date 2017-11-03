@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package voxelproto;
+
+import "voxelproto/voxelregion.proto";
+
+message WorldSnapshot {
+    string name = 4;
+
+    // Camera position and rotation
+    repeated float position = 1;
+    repeated float rotation = 2; //x-rot, y-rot, z-rot
+    // TODO: consider alternative representation of rotation
+
+    // Allow (optionally) storing world data as part of the snapshot.
+    // Though doing something more efficient in the future might be a good idea
+    repeated VoxelRegion regions = 3;
+
+    // TODO: consider adding a screenshot field, for archival purposes
+}
