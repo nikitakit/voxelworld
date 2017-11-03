@@ -231,8 +231,8 @@ function startLCM(lcm, game) {
     $("#prep-load-responses-confirm").click(function(){
         lcm.call("TaskService.Find", {
             names: [$('#prep-name').val()],
-            returnProcessed: true,
-            returnResponses: false
+            returnProcessed: false,
+            returnResponses: true
         }, loadResponses);
     });
 
