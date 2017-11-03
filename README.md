@@ -1,10 +1,31 @@
 # voxelworld
 
-This repository has code associated with interpreting spatial descriptors.
+This repository hosts code and data to accompany the paper [Where is Misty? Interpreting Spatial Descriptors by Modeling Regions in Space][1], which appeared in *EMNLP 2017*.
 
-The dataset and all code necessary to replicate our results will be distributed separately.
+Out dataset, model code, and trained parameters are available in the "releases" section of this repository. We provide two archives for download:
+- [Model Release][2]: this contains code for training and evaluating our model, as well as a copy of our *pre-processed* dataset. The files in this archive should suffice to replicate the results we reported in our paper.
+- [Raw Dataset Release][3]: this contains our *raw* dataset and our pre-processing script.
 
-The code in this repository mostly relates to the data collection and visualization required for our work. It includes an in-browser renderer for voxel scenes (which we used for both data collection and for visualizing model behavior during development). The remainder of this README assumes that you are interested in understanding our data collection pipeline.
+[1]: http://nlp.cs.berkeley.edu/pubs/Kitaev-Klein_2017_WhereIsMisty_paper.pdf
+[2]: https://github.com/nikitakit/voxelworld/releases/download/model/misty-model.zip
+[3]: https://github.com/nikitakit/voxelworld/releases/download/model/misty-raw-dataset.zip
+
+The code checked in to version control mostly relates to the data collection and visualization required for our work. This includes an in-browser renderer for voxel scenes (which we used for both data collection and for visualizing model behavior during development), our server for collecting crowdsourced data, and various other files.
+
+If you use our dataset or code in your research, please cite our paper:
+```
+@InProceedings{Kitaev-Klein:2017:WhereIsMisty,
+  title     = {Where is {Misty}? {Interpreting} Spatial Descriptors by Modeling Regions in Space},
+  author    = {Nikita Kitaev and Dan Klein},
+  booktitle = {Proceedings of EMNLP},
+  address   = {},
+  pages     = {},
+  month     = {September},
+  year      = {2017},
+}
+```
+
+The remainder of this README primarily concerns itself with describing our data collection pipeline.
 
 ## Architecture
 
